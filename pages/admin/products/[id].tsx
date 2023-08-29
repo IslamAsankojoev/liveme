@@ -37,6 +37,7 @@ const EditProduct: NextPageAuth = () => {
     isLoading,
     refetch,
   } = useQuery('product', () => ProductServices.findOne(Number(router.query.id)), {
+    enabled: !!router.query.id,
     select: ({ category, ...rest }: IProduct) => {
       return category ? ({ ...rest, category: category.id } as IProduct) : rest
     },
@@ -47,12 +48,12 @@ const EditProduct: NextPageAuth = () => {
     (values: IProduct) => ProductServices.update(Number(router.query.id), values),
     {
       onSuccess: () => {
-        // router.push('/admin/products')
+        // router.push(`/admin/products/`)
       },
     },
   )
 
-  const { mutate: CreateImage } = useMutation(
+  const { mutate: CreateImage, isLoading: CreateImageLoading } = useMutation(
     'product image add',
     (values: IThumbnail) => ThumbnailServices.create(values),
     {
@@ -60,7 +61,15 @@ const EditProduct: NextPageAuth = () => {
     },
   )
 
-  const { mutate: DeleteImage } = useMutation(
+  const {mutate: UpdateImage, isLoading: UpdateImageLoading } = useMutation(
+    'product image update',
+    (values: IThumbnail) => ThumbnailServices.update(values.id, values),
+    {
+      onSuccess: () => {},
+    },
+  )
+
+  const { mutate: DeleteImage, isLoading: DeleteImageLoading } = useMutation(
     'product image delete',
     (id: number) => ThumbnailServices.delete(id),
     {
@@ -80,18 +89,32 @@ const EditProduct: NextPageAuth = () => {
         onSuccess: async (data: IProduct) => {
           if (!!gallery.thumbnails.length) {
             const thumbnailsPromises = gallery.thumbnails.map((thumbnail: any, index) => {
-              CreateImage(
-                {
-                  imageFile: thumbnail,
-                  position: thumbnail?.position,
-                  galleryId: data?.gallery?.id,
-                },
-                {
-                  onError: (error) => {
-                    console.log(error)
+              if(thumbnail.uploaded) {
+                CreateImage(
+                  {
+                    imageFile: thumbnail.file,
+                    position: index + 1,
+                    galleryId: data?.gallery?.id,
                   },
-                },
-              )
+                  {
+                    onError: (error) => {
+                      console.log(error)
+                    },
+                  },
+                )
+              } else {
+                UpdateImage(
+                  {
+                    id: thumbnail.id,
+                    position: index + 1,
+                  },
+                  {
+                    onError: (error) => {
+                      console.log(error)
+                    },
+                  },
+                )
+              }
             })
             await Promise.all(thumbnailsPromises)
           }
@@ -138,7 +161,7 @@ const EditProduct: NextPageAuth = () => {
             initialValues={product}
             validationSchema={validationSchema}
             handleFormSubmit={handleFormSubmit}
-            submitLoading={mutateLoading}
+            submitLoading={mutateLoading || CreateImageLoading || UpdateImageLoading || DeleteImageLoading}
             mode="edit"
           />
         )}

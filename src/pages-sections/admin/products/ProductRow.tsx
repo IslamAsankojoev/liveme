@@ -14,6 +14,7 @@ import {
 } from "../StyledComponents";
 import { useMutation } from "react-query";
 import { ProductServices } from "api/product.service";
+import { sortedGallery } from "utils/sortedGallery";
 
 // ========================================================================
 type ProductRowProps = { product: IProduct, refetch: () => void };
@@ -51,7 +52,7 @@ const ProductRow: FC<ProductRowProps> = ({ product, refetch }) => {
     <StyledTableRow tabIndex={-1} role="checkbox">
       <StyledTableCell align="left">
         <FlexBox alignItems="center" gap={1.5}>
-          <Avatar src={gallery?.thumbnails[0]?.link || null} sx={{ borderRadius: "8px" }} />
+          <Avatar src={sortedGallery(gallery).thumbnails[0].link || null} sx={{ borderRadius: "8px" }} />
           <Box>
             <Paragraph>{name}</Paragraph>
             <Small color="grey.600"># {id}</Small>

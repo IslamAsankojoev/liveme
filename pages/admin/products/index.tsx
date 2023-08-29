@@ -1,7 +1,7 @@
 import Router from "next/router";
 import { ReactElement } from "react";
 import { GetStaticProps, NextPageAuth } from "next";
-import { Box, Card, Stack, Table, TableContainer } from "@mui/material";
+import { Box, Button, Card, Stack, Table, TableContainer } from "@mui/material";
 import TableBody from "@mui/material/TableBody";
 import SearchArea from "components/dashboard/SearchArea";
 import TableHeader from "components/data-table/TableHeader";
@@ -33,8 +33,6 @@ type ProductListProps = { products: Product[] };
 const ProductList:NextPageAuth = () => {
   const { data: products, refetch } = useQuery('products list', ProductServices.findAll, {
     select: (data: IProduct[]) => data,
-    cacheTime: 0,
-    staleTime: 0,
   })
 
   // RESHAPE THE PRODUCT LIST BASED TABLE HEAD CELL ID
@@ -58,11 +56,17 @@ const ProductList:NextPageAuth = () => {
     filteredList,
     handleChangePage,
     handleRequestSort,
-  } = useMuiTable({ listData: filteredProducts });
+  } = useMuiTable({ listData: products });
 
   return (
     <Box py={4}>
-      <H3 mb={2}>Product List</H3>
+      <H3 mb={2}>Product List  <Button
+            onClick={() => {
+              refetch()
+            }}
+          >
+            load data
+          </Button></H3>
 
       <SearchArea
         handleSearch={() => {}}

@@ -22,6 +22,7 @@ export const ThumbnailServices = {
   },
   create: async (data: IThumbnail) => {
     try {
+      console.log(data)
       const response = await axios.post(`${endpoint}`, objToFormData(data), {
        headers: {
         "Content-Type": 'multipart/form-data'

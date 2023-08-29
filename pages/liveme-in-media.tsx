@@ -12,27 +12,43 @@ import {
 } from '@mui/material'
 import SEO from 'components/SEO'
 import ShopLayout1 from 'components/layouts/ShopLayout1'
-import { useRouter } from 'next/router'
 import React from 'react'
 
 const media = [
   {
+    country_code: 'kg',
     name: 'Wildberries',
     title: 'Online Store for Fashion and Home Goods',
     link: 'https://www.wildberries.ru/brands/310432823-LIVEME',
     logo: '/assets/images/liveme-in-media/wb.png',
   },
   {
+    country_code: 'kg',
     name: 'Ozon',
     title: 'Online Store with a Wide Range of Products',
     link: 'https://www.ozon.ru/brand/liveme-100506539/',
     logo: '/assets/images/liveme-in-media/ozon.webp',
   },
   {
+    country_code: 'kg',
     name: 'Topshopes',
     title: 'Online Store for Stylish Clothing and Accessories',
     link: 'https://topshopes.com/shops/f1149347-8720-48d1-839d-f32f9e6cd80d/',
     logo: '/assets/images/liveme-in-media/topshopes.png',
+  },
+  {
+    country_code: 'tr',
+    name: 'Trendyol',
+    title: 'Online Store for Stylish Clothing and Accessories',
+    link: 'https://trendyol.com/',
+    logo: '/assets/images/liveme-in-media/trendyol.png',
+  },
+  {
+    country_code: 'kz',
+    name: 'Kaspi',
+    title: 'Online Store for Stylish Clothing and Accessories',
+    link: 'https://kaspi.kz/',
+    logo: '/assets/images/liveme-in-media/kaspi.png',
   },
 ]
 
@@ -50,8 +66,8 @@ const LivemeInMedia = () => {
           <Typography variant="h3" align="center">
             <b>Liveme in the media</b>
           </Typography>
-          <Grid container>
-            {media.map(({ link, logo, name, title }) => (
+          <Grid container justifyContent="center">
+            {media.map(({ link, logo, name, title, country_code }) => (
               <Grid
                 item
                 xs={12}
@@ -64,6 +80,7 @@ const LivemeInMedia = () => {
                   alignItems: 'center',
                   padding: '2rem',
                   gap: 3,
+                  position: 'relative',
                 }}
               >
                 <Avatar
@@ -85,7 +102,9 @@ const LivemeInMedia = () => {
                   }}
                   variant="square"
                 />
-                <Typography variant='subtitle2'><b>{title}</b></Typography>
+                <Typography variant="subtitle2">
+                  <b>{title}</b>
+                </Typography>
                 <StyledButton
                   onClick={() => {
                     window.open(link, '_blank')
@@ -94,6 +113,15 @@ const LivemeInMedia = () => {
                   color="dark"
                 >
                   Go to {name}
+                  <Avatar
+                    src={`https://flagcdn.com/${country_code}.svg`}
+                    sx={{
+                      width: 40,
+                      height: 25,
+                      marginLeft: 1,
+                    }}
+                    variant="square"
+                  />
                 </StyledButton>
               </Grid>
             ))}

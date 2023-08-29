@@ -2,12 +2,14 @@ import { FC, useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 import { Box, Button, Divider } from "@mui/material";
 import { H5, Small } from "./Typography";
+import { LoadingButton } from "@mui/lab";
 
 // ========================================================
 type DropZoneProps = {
   title?: string;
   imageSize?: string;
   onChange: (files: File[]) => void;
+  loading?: boolean;
 };
 // ========================================================
 
@@ -15,6 +17,7 @@ const DropZone: FC<DropZoneProps> = ({
   onChange,
   title = "Drag & drop product image here",
   imageSize = "Upload 280*280 image",
+  loading = false,
 }) => {
   const onDrop = useCallback(
     (acceptedFiles: File[]) => onChange(acceptedFiles),
@@ -58,14 +61,15 @@ const DropZone: FC<DropZoneProps> = ({
         </Small>
       </Divider>
 
-      <Button
+      <LoadingButton
+      loading={loading}
         type="button"
         variant="outlined"
         color="info"
         sx={{ px: 4, my: 4 }}
       >
         Select files
-      </Button>
+      </LoadingButton>
 
       <Small color="grey.600">{imageSize}</Small>
     </Box>

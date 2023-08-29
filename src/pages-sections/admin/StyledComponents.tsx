@@ -1,4 +1,9 @@
 import { Clear } from "@mui/icons-material";
+import HighlightOffTwoToneIcon from '@mui/icons-material/HighlightOffTwoTone';
+import DoDisturbOnIcon from '@mui/icons-material/DoDisturbOn';
+import CancelSharpIcon from '@mui/icons-material/CancelSharp';
+import CancelTwoToneIcon from '@mui/icons-material/CancelTwoTone';
+
 import {
   alpha,
   Box,
@@ -105,9 +110,11 @@ const UploadImageBox = styled(Card)(({ theme }) => ({
 const StyledClear = styled(Clear)({
   top: 5,
   right: 5,
-  fontSize: 14,
+  fontSize: 16,
   cursor: "pointer",
   position: "absolute",
+  zIndex: 2,
+  transition: "all 250ms ease-in-out",
 });
 
 export {

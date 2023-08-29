@@ -13,7 +13,13 @@ const ImageItem: FC<ImageItemProps> = ({ file, handleFileDelete }) => {
     <>
         <Box width="100%" height="100%" position="relative">
           <UploadImageBox>
-            <BazaarImage src={file.link} width="100%" />
+            <Box sx={{
+              backgroundImage: `url(${file.link})`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              width: '100%',
+              height: '100%',
+            }}/>
           </UploadImageBox>
           <Box sx={{
             width: '100%',
@@ -23,12 +29,7 @@ const ImageItem: FC<ImageItemProps> = ({ file, handleFileDelete }) => {
             left: 0,
             zIndex: 1,
           }}/>
-          <StyledClear sx={{
-            position: 'absolute',
-            top: 5,
-            right: 5,
-            zIndex: 2,
-          }} onClick={handleFileDelete(file)} />
+          <StyledClear  onClick={handleFileDelete(file)} />
         </Box>
     </>
   )

@@ -36,12 +36,12 @@ const CreateProduct: NextPageAuth = () => {
     (values: IProduct) => ProductServices.create(values),
     {
       onSuccess: (data: IProduct) => {
-        router.push(`/admin/products/${data.id}`)
+        router.push(`/admin/products/`)
       },
     },
   )
 
-  const { mutate: CreateImage } = useMutation(
+  const { mutate: CreateImage, isLoading: CreateImageLoading } = useMutation(
     'product image add',
     (values: IThumbnail) => ThumbnailServices.create(values),
     {
@@ -63,7 +63,7 @@ const CreateProduct: NextPageAuth = () => {
             const thumbnailsPromises = gallery?.thumbnails?.map((thumbnail: any, index) => {
               CreateImage(
                 {
-                  imageFile: thumbnail,
+                  imageFile: thumbnail.file,
                   position: data?.gallery?.thumbnails
                     ? data?.gallery?.thumbnails?.length + index + 1
                     : index + 1,
@@ -94,7 +94,7 @@ const CreateProduct: NextPageAuth = () => {
         initialValues={INITIAL_VALUES}
         validationSchema={validationSchema}
         handleFormSubmit={handleFormSubmit}
-        submitLoading={isLoading}
+        submitLoading={isLoading || CreateImageLoading}
         mode="create"
       />
     </Box>

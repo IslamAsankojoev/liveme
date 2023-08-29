@@ -41,7 +41,7 @@ const ExtraComponents = () => {
         <Grid container spacing={5}>
           <Grid item xs={12}>
             <Paper elevation={2} sx={{ p: 3, borderRadius: 2 }}>
-              <DropZone onChange={() => {}} />
+              <DropZone onChange={() => {}} loading={false} />
 
               <H4 mt={3} textAlign="center">
                 Dropzone

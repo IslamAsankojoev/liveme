@@ -17,6 +17,10 @@ import ReorderIcon from '@mui/icons-material/Reorder'
 import ImageItem from './ImageItem'
 import SortableList, { SortableItem } from 'react-easy-sort'
 import { arrayMoveImmutable, arrayMoveMutable } from 'array-move'
+import _ from 'lodash'
+import Resizer from "react-image-file-resizer";
+import { sortedGallery } from 'utils/sortedGallery'
+
 
 // ================================================================
 type ProductFormProps = {
@@ -27,13 +31,33 @@ type ProductFormProps = {
   mode: 'create' | 'edit'
 }
 
+const resizeFile = (file) =>
+  new Promise((resolve) => {
+    Resizer.imageFileResizer(
+      file,
+      1000,
+      1000,
+      "PNG",
+      97,
+      0,
+      (blob) => {
+        const fileName = `${new Date().toISOString()}-${file.name}`;
+        const newBlob = new Blob([blob as any], { type: 'image/jpeg' });
+        const newFile = new File([newBlob], fileName, { type: 'image/jpeg' });
+        resolve(newFile);
+      },
+      "blob",
+      600,
+      600
+    );
+  });
+
 const StyledTextField = styled(TextField)(({ theme }) => ({}))
 // ================================================================
 
 const ProductForm: FC<ProductFormProps> = (props) => {
   const { initialValues, validationSchema, handleFormSubmit, submitLoading, mode } = props
-  const [parent, enable] = useAutoAnimate()
-  const controls = useDragControls()
+  const [imageLoading, setImageLoading] = useState(false)
 
   const isCreateMode = mode === 'create'
   const { setWillRemovedThumbnail } = useContext(productContext)
@@ -43,24 +67,38 @@ const ProductForm: FC<ProductFormProps> = (props) => {
   })
 
   const [files, setFiles] = useState([])
-  const [localeThumbnails, setLocaleThumbnails] = useState([])
 
-  // HANDLE UPDATE NEW IMAGE VIA DROP ZONE
-  const handleChangeDropZone = (files: File[]) => {
-    files.forEach((file, index) =>
-      Object.assign(file, {
-        link: URL.createObjectURL(file),
-        id: file.name,
-        position: initialValues?.gallery?.thumbnails?.length + index + 1,
-      }),
-    )
-    setFiles((state) => [...state, ...files])
-    setLocaleThumbnails((state) => [...state, ...files])
-  }
+  const handleChangeDropZone = async (uploadedFiles: File[]) => {
+    setImageLoading(true)
+    const uploadedFilesTransformed = await Promise.all(
+      uploadedFiles.map(async (file, index) => {
+        try {
+          const resizedFile = await resizeFile(file);
+          if (resizedFile) {
+            return {
+              file: resizedFile,
+              link: URL.createObjectURL(resizedFile as any),
+              id: file?.name,
+              position: (initialValues?.gallery?.thumbnails?.length || 0) + index + 1,
+              uploaded: true,
+            };
+          }
+        } catch (error) {
+          console.error("Error resizing file:", error);
+        }
+      })
+    );
+
+    setFiles((state) => [...state, ...uploadedFilesTransformed.filter(Boolean)]);
+    setImageLoading(false)
+  };
+
+  
 
   // HANDLE DELETE UPLOAD IMAGE
   const handleFileDelete = (file: any) => () => {
     setFiles((files) => files.filter((item: any) => item.id !== file.id))
+
     if (!!initialValues?.gallery?.thumbnails?.find((item) => item.id === file.id)) {
       setWillRemovedThumbnail((state) => [...state, file.id])
     }
@@ -70,20 +108,23 @@ const ProductForm: FC<ProductFormProps> = (props) => {
     handleFormSubmit({
       ...values,
       gallery: {
-        thumbnails: localeThumbnails,
+        thumbnails: files,
       },
     })
   }
 
   const onSortEnd = (oldIndex: number, newIndex: number) => {
-    const newFiles = arrayMoveImmutable(files, oldIndex, newIndex)
-
-    setFiles(newFiles)
+    setFiles(arrayMoveImmutable(files, oldIndex, newIndex).map((item, index) => {
+      return {
+        ...item,
+        position: index + 1,
+      }
+    }))
   }
 
   useEffect(() => {
     if (!!initialValues?.gallery?.thumbnails?.length) {
-      setFiles(initialValues?.gallery?.thumbnails)
+      setFiles(sortedGallery(initialValues?.gallery)?.thumbnails)
     }
   }, [initialValues])
 
@@ -222,29 +263,25 @@ const ProductForm: FC<ProductFormProps> = (props) => {
               </Grid>
               <Grid item sm={4} xs={12}>
                 <Grid item xs={12}>
-                  <DropZone onChange={(files) => handleChangeDropZone(files)} />
+                  <DropZone onChange={(files) => handleChangeDropZone(files)} loading={imageLoading}/>
 
                   <Box mt={2}>
                     <SortableList
                       onSortEnd={onSortEnd}
-                      draggedItemClassName="dragged"
                       style={{
                         display: 'grid',
                         gridTemplateColumns: 'repeat(3, 1fr)',
                         gap: '10px',
                       }}
                     >
-                      {files?.map((item) => (
+                      {files?.map((item) => {
+                        return ( 
                         <SortableItem key={item}>
                           <div>
                             <ImageItem file={item} handleFileDelete={handleFileDelete} />
-                          </div>
-                        </SortableItem>
-                      ))}
-                      {/* {files?.map((item) => {
-                        console.log('item', item)
-                        return (<></>)
-                      })} */}
+                           </div>
+                        </SortableItem>)
+                      })}
                     </SortableList>
                   </Box>
                 </Grid>
