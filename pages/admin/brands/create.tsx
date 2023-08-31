@@ -18,8 +18,8 @@ const validationSchema = yup.object().shape({
   name: yup.string().required("required"),
 });
 
-const CreateBrand:NextPageAuth = () => {
-  const handleFormSubmit = () => {};
+const CreateBrand: NextPageAuth = () => {
+  const handleFormSubmit = () => { };
 
   return (
     <Box py={4}>

@@ -1,15 +1,14 @@
-import { ReactElement, createContext, useEffect, useState } from 'react'
-import { useRouter } from 'next/router'
 import { Box, Button } from '@mui/material'
-import * as yup from 'yup'
+import { ProductServices } from 'api/product.service'
+import { ThumbnailServices } from 'api/thumbnail.service'
 import { H3 } from 'components/Typography'
-import { ProductForm } from 'pages-sections/admin'
 import VendorDashboardLayout from 'components/layouts/vendor-dashboard'
 import { NextPageAuth } from 'next'
+import { useRouter } from 'next/router'
+import { ProductForm } from 'pages-sections/admin'
+import { ReactElement, createContext, useState } from 'react'
 import { useMutation, useQuery } from 'react-query'
-import { ProductServices } from 'api/product.service'
-import { clearNullProps } from 'utils/clearNullProps'
-import { ThumbnailServices } from 'api/thumbnail.service'
+import * as yup from 'yup'
 // import api from "utils/__api__/products";
 
 // form field validation schema
@@ -24,7 +23,7 @@ const validationSchema = yup.object().shape({
 
 export const productContext = createContext({
   willRemovedThumbnail: [],
-  setWillRemovedThumbnail: (value: any) => {},
+  setWillRemovedThumbnail: (value: any) => { },
 })
 
 const EditProduct: NextPageAuth = () => {
@@ -47,9 +46,7 @@ const EditProduct: NextPageAuth = () => {
     'product update',
     (values: IProduct) => ProductServices.update(Number(router.query.id), values),
     {
-      onSuccess: () => {
-        // router.push(`/admin/products/`)
-      },
+      onSuccess: () => { },
     },
   )
 
@@ -57,15 +54,15 @@ const EditProduct: NextPageAuth = () => {
     'product image add',
     (values: IThumbnail) => ThumbnailServices.create(values),
     {
-      onSuccess: () => {},
+      onSuccess: () => { },
     },
   )
 
-  const {mutate: UpdateImage, isLoading: UpdateImageLoading } = useMutation(
+  const { mutate: UpdateImage, isLoading: UpdateImageLoading } = useMutation(
     'product image update',
     (values: IThumbnail) => ThumbnailServices.update(values.id, values),
     {
-      onSuccess: () => {},
+      onSuccess: () => { },
     },
   )
 
@@ -73,11 +70,11 @@ const EditProduct: NextPageAuth = () => {
     'product image delete',
     (id: number) => ThumbnailServices.delete(id),
     {
-      onSuccess: () => {},
+      onSuccess: () => { },
     },
   )
 
-  const handleFormSubmit = ({ category, gallery, ...values }: IProduct) => {
+  const handleFormSubmit = ({ category, gallery, ...values }) => {
     UpdateProduct(
       {
         ...values,
@@ -89,7 +86,7 @@ const EditProduct: NextPageAuth = () => {
         onSuccess: async (data: IProduct) => {
           if (!!gallery.thumbnails.length) {
             const thumbnailsPromises = gallery.thumbnails.map((thumbnail: any, index) => {
-              if(thumbnail.uploaded) {
+              if (thumbnail.uploaded) {
                 CreateImage(
                   {
                     imageFile: thumbnail.file,

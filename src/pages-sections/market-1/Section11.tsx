@@ -18,13 +18,10 @@ const Section11: FC<Props> = ({ moreItems }) => {
           <Grid item lg={3} md={4} sm={6} xs={12} key={item.id}>
             <ProductCard1
               hoverEffect
-              id={item.id}
-              slug={item.slug}
-              title={item.title}
-              price={item.price}
-              rating={item.rating}
-              imgUrl={item.thumbnail}
-              discount={item.discount}
+              id={Number(item.id)}
+                name={item.title}
+                price={item.price}
+                rating={item.rating}
             />
           </Grid>
         ))}

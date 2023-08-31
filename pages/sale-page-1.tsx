@@ -152,13 +152,10 @@ const SalePage1: NextPage = () => {
           {productList.map((item) => (
             <Grid item lg={3} md={4} sm={6} xs={12} key={item.id}>
               <ProductCard1
-                id={item.id}
-                slug={item.slug}
-                title={item.title}
+                id={Number(item.id)}
+                name={item.title}
                 price={item.price}
                 rating={item.rating}
-                imgUrl={item.thumbnail}
-                discount={item.discount}
               />
             </Grid>
           ))}

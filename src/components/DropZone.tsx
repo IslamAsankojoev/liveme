@@ -62,7 +62,7 @@ const DropZone: FC<DropZoneProps> = ({
       </Divider>
 
       <LoadingButton
-      loading={loading}
+        loading={loading}
         type="button"
         variant="outlined"
         color="info"

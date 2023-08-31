@@ -59,13 +59,12 @@ const BlogCards = () => {
           <Grid item lg={3} md={4} sm={6} xs={12}>
             <ProductCard1
               hoverEffect
-              id={item.id}
-              slug={item.slug}
-              title="Product Card 1"
+              id={Number(item.id)}
+              name={item.slug}
               price={item.price}
               rating={item.rating}
-              imgUrl={item.thumbnail}
-              discount={item.discount}
+              // imgUrl={item.thumbnail}
+              // discount={item.discount}
             />
           </Grid>
 

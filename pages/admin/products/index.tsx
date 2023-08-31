@@ -1,6 +1,6 @@
 import Router from "next/router";
 import { ReactElement } from "react";
-import { GetStaticProps, NextPageAuth } from "next";
+import { NextPageAuth } from "next";
 import { Box, Button, Card, Stack, Table, TableContainer } from "@mui/material";
 import TableBody from "@mui/material/TableBody";
 import SearchArea from "components/dashboard/SearchArea";
@@ -11,10 +11,10 @@ import { H3 } from "components/Typography";
 import useMuiTable from "hooks/useMuiTable";
 import Scrollbar from "components/Scrollbar";
 import { ProductRow } from "pages-sections/admin";
-import api from "utils/__api__/dashboard";
 import Product from "models/Product.model";
 import { useQuery } from "react-query";
 import { ProductServices } from "api/product.service";
+import TableLoader from "components/Loader/TableLoader";
 
 // TABLE HEADING DATA LIST
 const tableHeading = [
@@ -30,8 +30,8 @@ const tableHeading = [
 type ProductListProps = { products: Product[] };
 // =============================================================================
 
-const ProductList:NextPageAuth = () => {
-  const { data: products, refetch } = useQuery('products list', ProductServices.findAll, {
+const ProductList: NextPageAuth = () => {
+  const { data: products, refetch, isLoading } = useQuery('products list', ProductServices.findAll, {
     select: (data: IProduct[]) => data,
   })
 
@@ -61,42 +61,47 @@ const ProductList:NextPageAuth = () => {
   return (
     <Box py={4}>
       <H3 mb={2}>Product List  <Button
-            onClick={() => {
-              refetch()
-            }}
-          >
-            load data
-          </Button></H3>
+        onClick={() => {
+          refetch()
+        }}
+      >
+        load data
+      </Button></H3>
 
       <SearchArea
-        handleSearch={() => {}}
+        handleSearch={() => { }}
         buttonText="Add Product"
         searchPlaceholder="Search Product..."
         handleBtnClick={() => Router.push("/admin/products/create")}
       />
 
       <Card>
-        <Scrollbar autoHide={false}>
-          <TableContainer sx={{ minWidth: 900 }}>
-            <Table>
-              <TableHeader
-                order={order}
-                hideSelectBtn
-                orderBy={orderBy}
-                heading={tableHeading}
-                rowCount={products?.length}
-                numSelected={selected.length}
-                onRequestSort={handleRequestSort}
-              />
 
-              <TableBody>
-                {filteredList?.map((product, index) => (
-                  <ProductRow product={product} key={index} refetch={refetch} />
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </Scrollbar>
+        {isLoading ? (
+          <TableLoader />
+        ) : (
+          <Scrollbar autoHide={false}>
+            <TableContainer sx={{ minWidth: 900 }}>
+              <Table>
+                <TableHeader
+                  order={order}
+                  hideSelectBtn
+                  orderBy={orderBy}
+                  heading={tableHeading}
+                  rowCount={products?.length}
+                  numSelected={selected.length}
+                  onRequestSort={handleRequestSort}
+                />
+
+                <TableBody>
+                  {filteredList?.map((product, index) => (
+                    <ProductRow product={product} key={index} refetch={refetch} />
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Scrollbar>
+        )}
 
         <Stack alignItems="center" my={4}>
           <TablePagination

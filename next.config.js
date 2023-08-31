@@ -14,6 +14,12 @@ module.exports = {
         port: '',
         pathname: '/media/**',
       },
+      {
+        protocol: 'http',
+        hostname: '*',
+        port: '8082',
+        pathname: '/thumbnail/**',
+      }
     ],
   },
   env: {

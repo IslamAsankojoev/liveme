@@ -1,25 +1,16 @@
 import { FC, useContext, useEffect, useState } from 'react'
-import { Box, Button, Card, Grid, MenuItem, TextField, styled } from '@mui/material'
+import { Box, Card, Grid, MenuItem, TextField, styled } from '@mui/material'
 import { Formik } from 'formik'
 import DropZone from 'components/DropZone'
-import { FlexBox } from 'components/flex-box'
-import BazaarImage from 'components/BazaarImage'
-import { UploadImageBox, StyledClear } from '../StyledComponents'
-import { useQuery } from 'react-query'
 import { CategoryService } from 'api/category.service'
 import { LoadingButton } from '@mui/lab'
-import { red } from '@mui/material/colors'
-import { formDataToObj, objToFormData } from 'utils/formData'
 import { productContext } from '../../../../pages/admin/products/[id]'
-import { useAutoAnimate } from '@formkit/auto-animate/react'
-import { Reorder, useDragControls } from 'framer-motion'
-import ReorderIcon from '@mui/icons-material/Reorder'
 import ImageItem from './ImageItem'
 import SortableList, { SortableItem } from 'react-easy-sort'
-import { arrayMoveImmutable, arrayMoveMutable } from 'array-move'
+import { arrayMoveImmutable } from 'array-move'
 import _ from 'lodash'
 import Resizer from "react-image-file-resizer";
-import { sortedGallery } from 'utils/sortedGallery'
+import { useQuery } from 'react-query'
 
 
 // ================================================================
@@ -69,19 +60,18 @@ const ProductForm: FC<ProductFormProps> = (props) => {
   const [files, setFiles] = useState([])
 
   const handleChangeDropZone = async (uploadedFiles: File[]) => {
-    setImageLoading(true)
     const uploadedFilesTransformed = await Promise.all(
       uploadedFiles.map(async (file, index) => {
         try {
           const resizedFile = await resizeFile(file);
           if (resizedFile) {
-            return {
+            setFiles((state) => [...state, {
               file: resizedFile,
               link: URL.createObjectURL(resizedFile as any),
               id: file?.name,
               position: (initialValues?.gallery?.thumbnails?.length || 0) + index + 1,
               uploaded: true,
-            };
+            }])
           }
         } catch (error) {
           console.error("Error resizing file:", error);
@@ -89,11 +79,11 @@ const ProductForm: FC<ProductFormProps> = (props) => {
       })
     );
 
-    setFiles((state) => [...state, ...uploadedFilesTransformed.filter(Boolean)]);
+    // setFiles((state) => [...state, ...uploadedFilesTransformed.filter(Boolean)]);
     setImageLoading(false)
   };
 
-  
+
 
   // HANDLE DELETE UPLOAD IMAGE
   const handleFileDelete = (file: any) => () => {
@@ -124,7 +114,7 @@ const ProductForm: FC<ProductFormProps> = (props) => {
 
   useEffect(() => {
     if (!!initialValues?.gallery?.thumbnails?.length) {
-      setFiles(sortedGallery(initialValues?.gallery)?.thumbnails)
+      setFiles(initialValues?.gallery?.thumbnails)
     }
   }, [initialValues])
 
@@ -263,7 +253,10 @@ const ProductForm: FC<ProductFormProps> = (props) => {
               </Grid>
               <Grid item sm={4} xs={12}>
                 <Grid item xs={12}>
-                  <DropZone onChange={(files) => handleChangeDropZone(files)} loading={imageLoading}/>
+                  <DropZone onChange={(files) => {
+                    setImageLoading(true)
+                    handleChangeDropZone(files)
+                  }} loading={imageLoading} />
 
                   <Box mt={2}>
                     <SortableList
@@ -275,12 +268,12 @@ const ProductForm: FC<ProductFormProps> = (props) => {
                       }}
                     >
                       {files?.map((item) => {
-                        return ( 
-                        <SortableItem key={item}>
-                          <div>
-                            <ImageItem file={item} handleFileDelete={handleFileDelete} />
-                           </div>
-                        </SortableItem>)
+                        return (
+                          <SortableItem key={item}>
+                            <div>
+                              <ImageItem file={item} handleFileDelete={handleFileDelete} />
+                            </div>
+                          </SortableItem>)
                       })}
                     </SortableList>
                   </Box>

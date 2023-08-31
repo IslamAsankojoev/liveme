@@ -36,13 +36,10 @@ const Section2: FC<Props> = ({ flashDeals }) => {
         {flashDeals.map((item) => (
           <Box py={0.5} key={item.id}>
             <ProductCard1
-              id={item.id}
-              slug={item.slug}
-              title={item.title}
+              id={Number(item.id)}
+              name={item.title}
               price={item.price}
               rating={item.rating}
-              imgUrl={item.thumbnail}
-              discount={item.discount}
             />
           </Box>
         ))}

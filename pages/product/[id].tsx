@@ -16,6 +16,8 @@ import {
 } from "utils/__api__/related-products";
 import Product from "models/Product.model";
 import api from "utils/__api__/products";
+import { useQuery } from "react-query";
+import { ProductServices } from "api/product.service";
 
 // styled component
 const StyledTabs = styled(Tabs)(({ theme }) => ({
@@ -39,9 +41,14 @@ type ProductDetailsProps = {
 // ===============================================================
 
 const ProductDetails: FC<ProductDetailsProps> = (props) => {
-  const { frequentlyBought, relatedProducts, product } = props;
-
+  // const { frequentlyBought, relatedProducts } = props;
   const router = useRouter();
+
+  const {data: product } = useQuery('product details', () => ProductServices.findOne(Number(router?.query?.id)), {
+    enabled: !!router?.query?.id,
+    select: (data:IProduct) => data
+  })
+
   const [selectedOption, setSelectedOption] = useState(0);
 
   const handleOptionClick = (_, value: number) => setSelectedOption(value);
@@ -58,7 +65,7 @@ const ProductDetails: FC<ProductDetailsProps> = (props) => {
         {product ? <ProductIntro product={product} /> : <H2>Loading...</H2>}
 
         {/* PRODUCT DESCRIPTION AND REVIEW */}
-        <StyledTabs
+        {/* <StyledTabs
           textColor="primary"
           value={selectedOption}
           indicatorColor="primary"
@@ -71,35 +78,35 @@ const ProductDetails: FC<ProductDetailsProps> = (props) => {
         <Box mb={6}>
           {selectedOption === 0 && <ProductDescription />}
           {selectedOption === 1 && <ProductReview />}
-        </Box>
+        </Box> */}
 
-        {frequentlyBought && (
+        {/* {frequentlyBought && (
           <FrequentlyBought productsData={frequentlyBought} />
         )}
 
         <AvailableShops />
 
-        {relatedProducts && <RelatedProducts productsData={relatedProducts} />}
+        {relatedProducts && <RelatedProducts productsData={relatedProducts} />} */}
       </Container>
     </ShopLayout1>
   );
 };
 
-export const getStaticPaths: GetStaticPaths = async () => {
-  const paths = await api.getSlugs();
+// export const getStaticPaths: GetStaticPaths = async () => {
+//   const paths = await api.getSlugs();
 
-  return {
-    paths: paths, //indicates that no page needs be created at build time
-    fallback: "blocking", //indicates the type of fallback
-  };
-};
+//   return {
+//     paths: paths, //indicates that no page needs be created at build time
+//     fallback: "blocking", //indicates the type of fallback
+//   };
+// };
 
-export const getStaticProps: GetStaticProps = async ({ params }) => {
-  const relatedProducts = await getRelatedProducts();
-  const frequentlyBought = await getFrequentlyBought();
-  const product = await api.getProduct(params.slug as string);
+// export const getStaticProps: GetStaticProps = async ({ params }) => {
+//   const relatedProducts = await getRelatedProducts();
+//   const frequentlyBought = await getFrequentlyBought();
+//   const product = await api.getProduct(params.slug as string);
 
-  return { props: { frequentlyBought, relatedProducts, product } };
-};
+//   return { props: { frequentlyBought, relatedProducts, product } };
+// };
 
 export default ProductDetails;

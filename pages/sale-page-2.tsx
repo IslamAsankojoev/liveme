@@ -1,42 +1,42 @@
-import { NextPage } from 'next';
-import { useEffect, useState } from 'react';
-import { Container, Grid, Pagination } from '@mui/material';
-import SEO from 'components/SEO';
-import { Span } from 'components/Typography';
-import { FlexBetween } from 'components/flex-box';
-import SaleLayout from 'components/layouts/SaleLayout';
-import ProductCard1 from 'components/product-cards/ProductCard1';
-import productDatabase from 'data/product-database';
-import { renderProductCount } from '../src/lib';
-import Product from 'models/Product.model';
-import api from 'utils/__api__/sales';
-import Sticky from 'components/Sticky';
-import SaleNavbar from 'components/navbar/SaleNavbar';
-import Category from 'models/Category.model';
+import { NextPage } from 'next'
+import { useEffect, useState } from 'react'
+import { Container, Grid, Pagination } from '@mui/material'
+import SEO from 'components/SEO'
+import { Span } from 'components/Typography'
+import { FlexBetween } from 'components/flex-box'
+import SaleLayout from 'components/layouts/SaleLayout'
+import ProductCard1 from 'components/product-cards/ProductCard1'
+import productDatabase from 'data/product-database'
+import { renderProductCount } from '../src/lib'
+import Product from 'models/Product.model'
+import api from 'utils/__api__/sales'
+import Sticky from 'components/Sticky'
+import SaleNavbar from 'components/navbar/SaleNavbar'
+import Category from 'models/Category.model'
+import { useQuery } from 'react-query'
+import { ProductServices } from 'api/product.service'
 
-const PRODUCT_PER_PAGE = 28;
+const PRODUCT_PER_PAGE = 28
 
 const SalePage2: NextPage = () => {
-  const [page, setPage] = useState(1);
-  const [selected, setSelected] = useState('men');
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [productList, setProductList] = useState<Product[]>([]);
+  const [page, setPage] = useState(1)
+  const [selected, setSelected] = useState('men')
+  const [categories, setCategories] = useState<Category[]>([])
+
+  const { data: productList = [] } = useQuery('product list shop', ProductServices.findAll, {
+    select: (data: IProduct[]) => data,
+  })
 
   // handle page change
-  const handlePageChange = (_, page: number) => setPage(page);
-
-  // FETCH THE PRODUCTS
-  useEffect(() => {
-    api.getProducts(page).then((data) => setProductList(data));
-  }, [page]);
+  const handlePageChange = (_, page: number) => setPage(page)
 
   // FETCH THE CATEGORY LIST
   useEffect(() => {
-    api.getCategoriesTwo().then((data) => setCategories(data));
-  }, []);
+    api.getCategoriesTwo().then((data) => setCategories(data))
+  }, [])
 
   // HANDLE CHANGE CATEGORY
-  const handleChangeCategory = (category: string) => () => setSelected(category);
+  const handleChangeCategory = (category: string) => () => setSelected(category)
 
   // CATEGORY NAV LIST
   const categoryNav = (
@@ -47,7 +47,7 @@ const SalePage2: NextPage = () => {
         onChangeCategory={handleChangeCategory}
       />
     </Sticky>
-  );
+  )
 
   return (
     <SaleLayout type="two" categoryNav={categoryNav}>
@@ -55,18 +55,10 @@ const SalePage2: NextPage = () => {
 
       <Container sx={{ mt: 4 }}>
         {/* PRODUCT LIST AREA */}
-        <Grid container spacing={3} minHeight={500}>
+        <Grid container spacing={3}>
           {productList.map((item) => (
             <Grid item lg={2.4} md={3} sm={4} xs={6} key={item.id}>
-              <ProductCard1
-                id={item.id}
-                slug={item.slug}
-                title={item.title}
-                price={item.price}
-                rating={item.rating}
-                imgUrl={item.thumbnail}
-                discount={item.discount}
-              />
+              <ProductCard1 {...item} />
             </Grid>
           ))}
         </Grid>
@@ -85,7 +77,7 @@ const SalePage2: NextPage = () => {
         </FlexBetween>
       </Container>
     </SaleLayout>
-  );
-};
+  )
+}
 
-export default SalePage2;
+export default SalePage2

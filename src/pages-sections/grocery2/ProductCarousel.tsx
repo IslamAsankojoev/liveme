@@ -41,13 +41,10 @@ const ProductCarousel: FC<ProductCarouselProps> = (props) => {
             <ProductCard1
               hideRating
               showProductSize
-              id={item.id}
-              slug={item.slug}
-              price={item.price}
-              title={item.title}
-              rating={item.rating}
-              imgUrl={item.thumbnail}
-              discount={item.discount}
+              id={Number(item.id)}
+                name={item.title}
+                price={item.price}
+                rating={item.rating}
             />
           </Box>
         ))}

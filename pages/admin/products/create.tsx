@@ -1,15 +1,14 @@
-import { ReactElement } from 'react'
 import { Box } from '@mui/material'
-import * as yup from 'yup'
+import { ProductServices } from 'api/product.service'
+import { ThumbnailServices } from 'api/thumbnail.service'
 import { H3 } from 'components/Typography'
-import { ProductForm } from 'pages-sections/admin'
 import VendorDashboardLayout from 'components/layouts/vendor-dashboard'
 import { NextPageAuth } from 'next'
-import { useMutation } from 'react-query'
-import { ProductServices } from 'api/product.service'
 import { useRouter } from 'next/router'
-import { ThumbnailServices } from 'api/thumbnail.service'
-import { objToFormData } from 'utils/formData'
+import { ProductForm } from 'pages-sections/admin'
+import { ReactElement } from 'react'
+import { useMutation } from 'react-query'
+import * as yup from 'yup'
 
 const CreateProduct: NextPageAuth = () => {
   const router = useRouter()
@@ -31,25 +30,23 @@ const CreateProduct: NextPageAuth = () => {
     category: yup.string().required('required'),
   })
 
-  const { mutate: CreateProduct, isLoading } = useMutation(
+  const { mutateAsync: CreateProduct, isLoading } = useMutation(
     'product create',
     (values: IProduct) => ProductServices.create(values),
     {
-      onSuccess: (data: IProduct) => {
-        router.push(`/admin/products/`)
-      },
+      onSuccess: () => { },
     },
   )
 
-  const { mutate: CreateImage, isLoading: CreateImageLoading } = useMutation(
+  const { mutateAsync: CreateImage, isLoading: CreateImageLoading } = useMutation(
     'product image add',
     (values: IThumbnail) => ThumbnailServices.create(values),
     {
-      onSuccess: () => {},
+      onSuccess: () => { },
     },
   )
 
-  const handleFormSubmit = ({ category, gallery, ...values }: IProduct) => {
+  const handleFormSubmit = async ({ category, gallery, ...values }: IProduct, redirect?: boolean) => {
     CreateProduct(
       {
         ...values,
@@ -77,9 +74,10 @@ const CreateProduct: NextPageAuth = () => {
               )
             })
 
-            await Promise.all(thumbnailsPromises)
-
-            console.log('all done')
+            const end = await Promise.all(thumbnailsPromises)
+            if (end) {
+              router.push('/admin/products')
+            }
           }
         },
       },
